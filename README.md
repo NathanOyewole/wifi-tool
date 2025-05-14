@@ -23,18 +23,18 @@ To install the required dependencies, run:
 sudo apt update
 sudo apt install iw network-manager
 
-## Cloning the Repository
+Cloning the Repository
 First, clone this repository to your local machine:
 
 git clone https://github.com/NathanOyewole/wifi-tool.git
 cd wifi-tool
 
-## Making the Script Executable
+Making the Script Executable
 Make the script executable:
 
 chmod +x wifi-scanner.sh
 
-## Running the Script
+Running the Script
 Run the script with root privileges to scan for WiFi networks:
 
 sudo ./wifi-scanner.sh
@@ -43,7 +43,7 @@ If you want to save the results (including passwords, if extracted) into a file,
 
 sudo ./wifi-scanner.sh > output.txt
 
-## How the Script Works
+How the Script Works
 The script first checks for available WiFi networks.
 
 It lists both saved WiFi networks and unsaved networks.
@@ -52,7 +52,7 @@ For saved networks, it attempts to extract the saved passwords (if available).
 
 The information is displayed on the screen and optionally saved to a file.
 
-## Usage
+Usage
 To list all available networks (both saved and unsaved), simply run the script. It will display the following information for each network:
 
 SSID: The name of the WiFi network.
@@ -61,7 +61,7 @@ Signal Strength: The strength of the signal (in dBm).
 
 Password: The password for saved networks, if available.
 
-## Example output:
+Example output:
 
 Network Name: HomeWiFi
 Signal Strength: -40 dBm
@@ -70,3 +70,5 @@ Password: myhomepassword
 Network Name: PublicWiFi
 Signal Strength: -75 dBm
 Password: N/A (unsaved network)
+
+```
