@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Colors for output
+RED="\e[31m"
+GREEN="\e[32m"
+CYAN="\e[36m"
+RESET="\e[0m"
+
+# Function to scan available networks
+scan_networks() {
+    echo -e "${CYAN}📡 Nearby WiFi Networks:${RESET}"
+    sudo iwlist scan 2>/dev/null | grep -E "ESSID|Quality|Encryption" | sed 's/^[ \t]*//' |
+    awk '
+        /ESSID:/ {ssid=$0; gsub("ESSID:","",ssid); gsub("\"","",ssid);}
+        /Quality=/ {quality=$0; gsub("Quality=","",quality);}
+        /Encryption key/ {
+            printf("SSID: %s\nSignal: %s\nSecurity: %s\n\n", ssid, quality, $0);
+        }'
+}
+
+# Function to show saved WiFi networks
+show_saved() {
+    echo -e "${CYAN}💾 Saved WiFi Profiles:${RESET}"
+    nmcli -t -f NAME,DEVICE connection show | grep ":.*" | cut -d ':' -f1
+}
+
+# Function to extract and save WiFi passwords
+extract_passwords() {
+    echo -e "${GREEN}🔐 Extracting saved passwords (requires sudo)...${RESET}"
+    mkdir -p exports
+    echo "{" > exports/wifi_passwords.json
+    > exports/wifi_passwords.txt
+
+    for profile in $(nmcli -t -f NAME connection show); do
+        path="/etc/NetworkManager/system-connections/$profile"
+        if sudo test -f "$path"; then
+            psk=$(sudo grep '^psk=' "$path" 2>/dev/null | cut -d '=' -f2)
+            if [ ! -z "$psk" ]; then
+                echo -e "${GREEN}✔️ $profile${RESET}"
+                echo "\"$profile\": \"$psk\"," >> exports/wifi_passwords.json
+                echo "$profile: $psk" >> exports/wifi_passwords.txt
+            fi
+        fi
+    done
+
+    sed -i '$ s/,$//' exports/wifi_passwords.json
+    echo "}" >> exports/wifi_passwords.json
+    echo -e "\n📁 Saved to: exports/wifi_passwords.json & wifi_passwords.txt"
+}
+
+# Main menu using dialog
+menu_choice=$(dialog --menu "WiFi Tool Menu" 15 50 4 \
+    1 "Scan Available WiFi Networks" \
+    2 "List Saved WiFi Networks" \
+    3 "Extract & Export Saved Passwords" \
+    4 "Exit" 3>&1 1>&2 2>&3)
+
+case $menu_choice in
+    1) scan_networks ;;
+    2) show_saved ;;
+    3) extract_passwords ;;
+    4) exit 0 ;;
+    *) echo "Invalid choice" ;;
+esac
+

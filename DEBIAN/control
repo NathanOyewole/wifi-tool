@@ -1,0 +1,6 @@
+Package: wifi-tool
+Version: 1.0
+Architecture: all
+Maintainer: Nathan Oyewole
+Description: A CLI tool to scan and export saved WiFi passwords
+Depends: bash, network-manager, iw
